@@ -1,0 +1,35 @@
+FROM golang:1.19.8 AS builder
+WORKDIR /workspace
+
+# Copy the Go Modules manifests
+COPY go.mod go.mod
+COPY go.sum go.sum
+
+# cache deps before building and copying source so that we don't need to re-download as much
+# and so that source changes don't invalidate our downloaded layer
+RUN go mod download
+
+# Copy the go source
+COPY . .
+
+# Build
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -o scorpio-ui cmd/main.go
+
+# Use distroless as minimal base image to package the manager binary
+# Refer to https://github.com/GoogleContainerTools/distroless for more details
+FROM alpine:latest
+
+RUN apk update
+
+# install bash
+RUN apk add --no-cache bash
+
+WORKDIR /
+
+# Add configuration files
+ADD /internal/config/local.yml /internal/config/local.yml
+
+COPY --from=builder /workspace/scorpio-ui .
+
+# the command to start the application
+ENTRYPOINT ["/scorpio-ui"]
