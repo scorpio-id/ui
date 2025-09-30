@@ -1,7 +1,20 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net/http"
+
+	"github.com/scorpio-id/ui/internal/config"
+	"github.com/scorpio-id/ui/internal/transport"
+)
 
 func main() {
-	fmt.Print("new dawn, new day")
+	// parse local config
+	cfg := config.NewConfig("internal/config/local.yml")
+
+	// create a new mux router
+	router := transport.NewRouter(cfg)
+
+	// start the server
+	log.Fatal(http.ListenAndServe(":"+cfg.Server.Port, router))
 }
