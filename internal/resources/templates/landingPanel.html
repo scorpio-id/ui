@@ -7,6 +7,21 @@
     <script src="/resources/htmx/htmx.min.js"></script>
   </head>
   <body>
-      <button hx-get="http://krb.scorpio.ordinarycomputing.com:8083/krb/metadata">Get Krb Metadata</button>
-    </body>
+      <button hx-get="https://oauth.scorpio.ordinarycomputing.com:8082/ui/metadata">Get OAuth2 Metadata</button>
+      <button hx-get="https://ca.scorpio.ordinarycomputing.com:8081/ui/metadata">Get PKI Metadata</button>
+      <button hx-get="http://krb.scorpio.ordinarycomputing.com:8083/ui/metadata">Get Krb Metadata</button>
+    
+      <form hx-post="https://oauth.scorpio.ordinarycomputing.com:8082/ui/register">
+        <span>Register with OAuth</span>
+
+        <input id="client_id" name="client_id" type="text" placeholder="Client ID"
+            hx-trigger="change">
+
+        <input id="email" name="email" type="text" placeholder="Email"
+            hx-trigger="change">
+
+        <button type="submit">Submit</button>
+      </form>
+    
+  </body>
 </html>
