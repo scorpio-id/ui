@@ -5,8 +5,12 @@
     <meta charset="utf-8" />
     <meta name="htmx-config" content='{"selfRequestsOnly":false}'>
     <script src="/resources/htmx/htmx.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
   <body>
+    <h1 class="text-3xl font-bold underline">
+      Hello, Tailwind CSS!
+    </h1>
       <button hx-get="https://oauth.scorpio.ordinarycomputing.com:8082/ui/metadata">Get OAuth2 Metadata</button>
       <button hx-get="https://ca.scorpio.ordinarycomputing.com:8081/ui/metadata">Get PKI Metadata</button>
       <button hx-get="http://krb.scorpio.ordinarycomputing.com:8083/ui/metadata">Get Krb Metadata</button>
