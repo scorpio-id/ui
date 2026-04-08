@@ -1,0 +1,106 @@
+<h1 class="page-title">OAuth2 Management</h1>
+<p class="page-description">Manage OAuth2 configurations, tokens, and JWT settings.</p>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Active Applications</div>
+    <div class="stat-value">28</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Tokens Issued</div>
+    <div class="stat-value">45,230</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Tokens Expiring Soon</div>
+    <div class="stat-value">12</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Revoked Tokens</div>
+    <div class="stat-value">89</div>
+  </div>
+</div>
+
+<div class="section-block">
+  <h3>OAuth2 Clients</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Client ID</th>
+        <th>Email</th>
+        <th>User Principal Name</th>
+        <th>Service Principal Name</th>
+        <th>Common Name</th>
+        <th>Subject Alternate Names</th>
+      </tr>
+    </thead>
+      <tbody hx-get="https://oauth.scorpio.ordinarycomputing.com:8082/ui/metadata" hx-trigger="load" hx-swap="innerHTML" hx-target="this" data-client-table="true">
+        <tr>
+          <td colspan="6">Loading clients...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <script>
+    function escapeHtml(text) {
+      return String(text || '').replace(/[&<>"']/g, function(match) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[match];
+      });
+    }
+
+    document.addEventListener('htmx:beforeSwap', function(evt) {
+      if (!evt.target.matches('tbody[data-client-table]')) {
+        return;
+      }
+
+      var xhr = evt.detail.xhr;
+      if (!xhr) {
+        return;
+      }
+
+      var contentType = xhr.getResponseHeader('Content-Type') || '';
+      if (contentType.indexOf('application/json') === -1) {
+        return;
+      }
+
+      try {
+        var data = JSON.parse(xhr.responseText);
+      } catch (err) {
+        return;
+      }
+
+      var rows = '';
+      if (Array.isArray(data.clients) && data.clients.length > 0) {
+        data.clients.forEach(function(client) {
+          var altNames = Array.isArray(client.subject_alternate_names)
+            ? client.subject_alternate_names.join(', ')
+            : '';
+
+          rows += '<tr>' +
+            '<td>' + escapeHtml(client.id) + '</td>' +
+            '<td>' + escapeHtml(client.email) + '</td>' +
+            '<td>' + escapeHtml(client.user_principal_name) + '</td>' +
+            '<td>' + escapeHtml(client.service_principal_name) + '</td>' +
+            '<td>' + escapeHtml(client.common_name) + '</td>' +
+            '<td>' + escapeHtml(altNames) + '</td>' +
+            '</tr>';
+        });
+      }
+
+      if (!rows) {
+        rows = '<tr><td colspan="6">No clients found</td></tr>';
+      }
+
+      evt.detail.shouldSwap = false;
+      evt.target.innerHTML = rows;
+    });
+  </script>
+</div>
+</div>
+
+<button class="top-button">Create New Application</button>

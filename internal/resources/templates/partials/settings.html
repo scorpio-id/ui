@@ -1,0 +1,48 @@
+<h1 class="page-title">Settings</h1>
+<p class="page-description">Configure system-wide settings and preferences.</p>
+
+<div class="section-block">
+  <h3>General Settings</h3>
+  <form class="form form-inset">
+    <div>
+      <label class="field-label">System Name</label>
+      <input class="input-full" type="text" value="Scorpio Authentication Platform">
+    </div>
+    
+    <div>
+      <label class="field-label">Administrator Email</label>
+      <input class="input-full" type="email" value="admin@example.com">
+    </div>
+
+    <div>
+      <label class="field-label">Timezone</label>
+      <select class="input-full">
+        <option>UTC</option>
+        <option selected>America/New_York</option>
+        <option>Europe/London</option>
+        <option>Asia/Tokyo</option>
+      </select>
+    </div>
+
+    <div>
+      <label class="checkbox-label">
+        <input type="checkbox" checked>
+        <span>Enable Notifications</span>
+      </label>
+    </div>
+
+    <div>
+      <label class="checkbox-label">
+        <input type="checkbox" checked>
+        <span>Enable Audit Logging</span>
+      </label>
+    </div>
+
+    <button type="submit" class="button-start">Save Settings</button>
+  </form>
+</div>
+
+<div class="danger-zone">
+  <h3 class="danger-zone-title">Danger Zone</h3>
+  <button class="secondary danger-outline">Clear All Logs</button>
+</div>

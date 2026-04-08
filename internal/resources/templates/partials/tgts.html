@@ -1,0 +1,60 @@
+<h1 class="page-title">Ticket Granting Ticket (TGT) Management</h1>
+<p class="page-description">View and manage Kerberos Ticket Granting Tickets.</p>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Active TGTs</div>
+    <div class="stat-value">234</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Issued Today</div>
+    <div class="stat-value">89</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Expiring Today</div>
+    <div class="stat-value">12</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Revoked</div>
+    <div class="stat-value">3</div>
+  </div>
+</div>
+
+<div class="section-block">
+  <h3>Active TGTs by Realm</h3>
+  <div class="list-panel">
+    <div class="list-item">
+      <div>
+        <strong>EXAMPLE.COM</strong> - 145 active TGTs
+        <div class="panel-text">KDC: kdc1.example.com | Realm Principal: krbtgt/EXAMPLE.COM</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div>
+        <strong>CORP.LOCAL</strong> - 67 active TGTs
+        <div class="panel-text">KDC: kdc.corp.local | Realm Principal: krbtgt/CORP.LOCAL</div>
+      </div>
+    </div>
+    <div class="list-item">
+      <div>
+        <strong>DEV.REALM</strong> - 22 active TGTs
+        <div class="panel-text">KDC: kdc-dev.local | Realm Principal: krbtgt/DEV.REALM</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section-block">
+  <h3>Recent TGT Activity</h3>
+  <div class="list-panel">
+    <div class="list-item">
+      <strong>TGT Issued</strong> - user@EXAMPLE.COM - 1 hour ago
+    </div>
+    <div class="list-item">
+      <strong>TGT Renewed</strong> - admin@CORP.LOCAL - 3 hours ago
+    </div>
+    <div class="list-item">
+      <strong>TGT Expired</strong> - service@DEV.REALM - 2 days ago
+    </div>
+  </div>
+</div>

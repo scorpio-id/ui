@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Scorpio Dashboard</title>
+    <meta charset="utf-8" />
+    <meta name="htmx-config" content='{"selfRequestsOnly":false}' />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="/resources/htmx/htmx.min.js"></script>
+    <link rel="stylesheet" href="/resources/styles/main.css" />
+  </head>
+  <body>
+    <div class="sidebar-panel">
+      <div class="logo-container">
+        <img src="/resources/images/scorpioFullLogoWhite.png" alt="Scorpio Logo" />
+      </div>
+
+      <nav>
+        <!-- Overview Section -->
+        <div class="nav-section">
+          <div class="nav-section-title">Overview</div>
+          <button class="nav-button active" hx-get="/ui/dashboard/overview" hx-target=".content-area" hx-swap="innerHTML">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3"></polyline>
+            </svg>
+            Overview
+          </button>
+        </div>
+
+        <!-- OAuth2 Section -->
+        <div class="nav-section">
+          <div class="nav-section-title">OAuth2</div>
+          <button class="nav-button" hx-get="/ui/oauth2" hx-target=".content-area" hx-swap="innerHTML">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 5v14m7-7H5"></path>
+            </svg>
+            Clients
+          </button>
+          <button class="nav-button" hx-get="/ui/oauth2/jwts" hx-target=".content-area" hx-swap="innerHTML">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            JWTs
+          </button>
+        </div>
+
+        <!-- PKI Section -->
+        <div class="nav-section">
+          <div class="nav-section-title">PKI</div>
+          <button class="nav-button" hx-get="/ui/pki/x509s" hx-target=".content-area" hx-swap="innerHTML">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            X509s
+          </button>
+        </div>
+
+        <!-- Kerberos Section -->
+        <div class="nav-section">
+          <div class="nav-section-title">Kerberos</div>
+          <button class="nav-button" hx-get="/ui/kerberos/tgts" hx-target=".content-area" hx-swap="innerHTML">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"></path>
+              <path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"></path>
+            </svg>
+            TGTs
+          </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- User Section -->
+        <div class="bottom-section">
+          <div class="nav-section">
+
+            <button class="nav-button" hx-get="/ui/settings" hx-target=".content-area" hx-swap="innerHTML">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6m0 6v6M4.22 4.22l4.24 4.24m4.24 4.24l4.24 4.24M1 12h6m6 0h6m-16.78 7.78l4.24-4.24m4.24-4.24l4.24-4.24"></path>
+              </svg>
+              Settings
+            </button>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div class="content-area" hx-get="/ui/dashboard/overview" hx-target="this" hx-swap="innerHTML" hx-trigger="load">
+    </div>
+
+    <script>
+      // Add active state tracking for nav buttons
+      document.addEventListener('htmx:afterSwap', function(evt) {
+        if (evt.detail.xhr.status === 200) {
+          document.querySelectorAll('.nav-button.active').forEach(item => {
+            item.classList.remove('active');
+          });
+          
+          // Find the clicked button and mark it as active
+          const clickedBtn = document.querySelector('.nav-button[hx-get="' + evt.detail.xhr.responseURL.split('?')[0].replace(window.location.origin, '') + '"]');
+          if (clickedBtn) {
+            clickedBtn.classList.add('active');
+          } else {
+            // Fallback: mark the button that triggered the swap as active
+            let target = evt.detail.target;
+            if (target.classList.contains('nav-button')) {
+              target.classList.add('active');
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

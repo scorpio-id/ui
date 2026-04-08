@@ -23,7 +23,35 @@ func NewRouter(cfg config.Config) *mux.Router {
 	render := NewWebRender(cfg)
 
 	// handles main sections of website
-	router.HandleFunc("/", render.LandingPageHandler).Methods(http.MethodGet, http.MethodOptions)
-	
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/dashboard", http.StatusFound)
+	}).Methods(http.MethodGet)
+	router.HandleFunc("/dashboard", render.DashboardPageHandler).Methods(http.MethodGet)
+
+	// Dashboard routes
+	router.HandleFunc("/ui/dashboard/overview", render.ServePartialHandler("overview.html")).Methods(http.MethodGet)
+	router.HandleFunc("/ui/dashboard/analytics", render.ServePartialHandler("analytics.html")).Methods(http.MethodGet)
+
+	// OAuth2 routes
+	router.HandleFunc("/ui/oauth2", render.ServePartialHandler("oauth2.html")).Methods(http.MethodGet)
+	router.HandleFunc("/ui/oauth2/jwts", render.ServePartialHandler("jwts.html")).Methods(http.MethodGet)
+	router.HandleFunc("/ui/oauth2/clients", render.HandleOAuth2Clients).Methods(http.MethodGet)
+
+	// PKI routes
+	router.HandleFunc("/ui/pki/x509s", render.ServePartialHandler("x509s.html")).Methods(http.MethodGet)
+
+	// Kerberos routes
+	router.HandleFunc("/ui/kerberos/tgts", render.ServePartialHandler("tgts.html")).Methods(http.MethodGet)
+
+	// User management routes
+	router.HandleFunc("/ui/notifications", render.ServePartialHandler("notifications.html")).Methods(http.MethodGet)
+	router.HandleFunc("/ui/settings", render.ServePartialHandler("settings.html")).Methods(http.MethodGet)
+	router.HandleFunc("/ui/user/profile", render.ServePartialHandler("profile.html")).Methods(http.MethodGet)
+	router.HandleFunc("/ui/user/logout", render.HandleLogout).Methods(http.MethodPost)
+
+	// OAuth2 metadata endpoints
+	router.HandleFunc("/ui/metadata", render.HandleOAuth2Metadata).Methods(http.MethodGet)
+	router.HandleFunc("/ui/register", render.HandleOAuth2Register).Methods(http.MethodPost)
+
 	return router
 }
