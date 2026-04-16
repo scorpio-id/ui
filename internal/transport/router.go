@@ -30,12 +30,9 @@ func NewRouter(cfg config.Config) *mux.Router {
 
 	// Dashboard routes
 	router.HandleFunc("/ui/dashboard/overview", render.ServePartialHandler("overview.html")).Methods(http.MethodGet)
-	router.HandleFunc("/ui/dashboard/analytics", render.ServePartialHandler("analytics.html")).Methods(http.MethodGet)
 
 	// OAuth2 routes
-	router.HandleFunc("/ui/oauth2", render.ServePartialHandler("oauth2.html")).Methods(http.MethodGet)
-	router.HandleFunc("/ui/oauth2/jwts", render.ServePartialHandler("jwts.html")).Methods(http.MethodGet)
-	router.HandleFunc("/ui/oauth2/clients", render.HandleOAuth2Clients).Methods(http.MethodGet)
+	router.HandleFunc("/ui/oauth2", render.ServePartialHandler("clients.html")).Methods(http.MethodGet)
 
 	// PKI routes
 	router.HandleFunc("/ui/pki/x509s", render.ServePartialHandler("x509s.html")).Methods(http.MethodGet)

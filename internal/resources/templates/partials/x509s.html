@@ -20,7 +20,29 @@
   </div>
 </div>
 
+
 <div class="section-block">
+  <h3>X.509 Certificates</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Common Name</th>
+        <th>Subject Alternative Names</th>
+        <th>Issuer</th>
+        <th>Serial Number</th>
+        <th>Expiration Date</th>
+        <th>Is Certificate Authority</th>
+      </tr>
+    </thead>
+      <tbody hx-get="https://ca.scorpio.ordinarycomputing.com:8081/ui/metadata" hx-trigger="load" hx-swap="innerHTML" hx-target="this" data-client-table="true">
+        <tr>
+          <td colspan="6">Loading Certificates...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+{% comment %} <div class="section-block">
   <h3>Certificates Expiring Soon</h3>
   <div class="list-panel">
     <div class="list-item">
@@ -42,6 +64,6 @@
       </div>
     </div>
   </div>
-</div>
+</div> {% endcomment %}
 
 <button class="top-button">Issue New Certificate</button>
