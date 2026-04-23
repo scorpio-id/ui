@@ -32,19 +32,16 @@ func NewRouter(cfg config.Config) *mux.Router {
 	router.HandleFunc("/ui/dashboard/overview", render.ServePartialHandler("overview.html")).Methods(http.MethodGet)
 
 	// OAuth2 routes
-	router.HandleFunc("/ui/oauth2", render.ServePartialHandler("clients.html")).Methods(http.MethodGet)
+	router.HandleFunc("/ui/oauth2", render.ServePartialHandler("oauth2.html")).Methods(http.MethodGet)
 
 	// PKI routes
-	router.HandleFunc("/ui/pki/x509s", render.ServePartialHandler("x509s.html")).Methods(http.MethodGet)
+	router.HandleFunc("/ui/pki", render.ServePartialHandler("pki.html")).Methods(http.MethodGet)
 
 	// Kerberos routes
-	router.HandleFunc("/ui/kerberos/tgts", render.ServePartialHandler("tgts.html")).Methods(http.MethodGet)
+	router.HandleFunc("/ui/kerberos", render.ServePartialHandler("kerberos.html")).Methods(http.MethodGet)
 
 	// User management routes
-	router.HandleFunc("/ui/notifications", render.ServePartialHandler("notifications.html")).Methods(http.MethodGet)
 	router.HandleFunc("/ui/settings", render.ServePartialHandler("settings.html")).Methods(http.MethodGet)
-	router.HandleFunc("/ui/user/profile", render.ServePartialHandler("profile.html")).Methods(http.MethodGet)
-	router.HandleFunc("/ui/user/logout", render.HandleLogout).Methods(http.MethodPost)
 
 	// OAuth2 metadata endpoints
 	router.HandleFunc("/ui/metadata", render.HandleOAuth2Metadata).Methods(http.MethodGet)
