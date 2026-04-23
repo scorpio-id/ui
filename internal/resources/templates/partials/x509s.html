@@ -28,42 +28,78 @@
       <tr>
         <th>Common Name</th>
         <th>Subject Alternative Names</th>
-        <th>Issuer</th>
+        <th>Issued</th>
         <th>Serial Number</th>
         <th>Expiration Date</th>
         <th>Is Certificate Authority</th>
       </tr>
     </thead>
-      <tbody hx-get="https://ca.scorpio.ordinarycomputing.com:8081/ui/metadata" hx-trigger="load" hx-swap="innerHTML" hx-target="this" data-client-table="true">
+      <tbody hx-get="https://ca.scorpio.ordinarycomputing.com:8081/ui/metadata" hx-trigger="load" hx-swap="innerHTML" hx-target="this" data-cert-table="true">
         <tr>
           <td colspan="6">Loading Certificates...</td>
         </tr>
       </tbody>
     </table>
   </div>
+    <script>
+    function escapeHtml(text) {
+      return String(text || '').replace(/[&<>"']/g, function(match) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[match];
+      });
+    }
 
-{% comment %} <div class="section-block">
-  <h3>Certificates Expiring Soon</h3>
-  <div class="list-panel">
-    <div class="list-item">
-      <div>
-        <strong>api.example.com</strong> - Expires in 7 days
-        <div class="panel-text">CN: api.example.com | Serial: 1A2B3C4D</div>
-      </div>
-    </div>
-    <div class="list-item">
-      <div>
-        <strong>www.example.com</strong> - Expires in 14 days
-        <div class="panel-text">CN: *.example.com | Serial: 5E6F7G8H</div>
-      </div>
-    </div>
-    <div class="list-item">
-      <div>
-        <strong>mail.example.com</strong> - Expires in 21 days
-        <div class="panel-text">CN: mail.example.com | Serial: 9I0J1K2L</div>
-      </div>
-    </div>
-  </div>
-</div> {% endcomment %}
+    document.addEventListener('htmx:beforeSwap', function(evt) {
+      if (!evt.target.matches('tbody[data-cert-table]')) {
+        return;
+      }
+
+      var xhr = evt.detail.xhr;
+      if (!xhr) {
+        return;
+      }
+
+      var contentType = xhr.getResponseHeader('Content-Type') || '';
+      if (contentType.indexOf('application/json') === -1) {
+        return;
+      }
+
+      try {
+        var data = JSON.parse(xhr.responseText);
+      } catch (err) {
+        return;
+      }
+
+      var rows = '';
+      if (Array.isArray(data.certificate_data) && data.certificate_data.length > 0) {
+        data.certificate_data.forEach(function(cert) {
+          var altNames = Array.isArray(cert.subject_alternate_names)
+            ? cert.subject_alternate_names.join(', ')
+            : '';
+
+          rows += '<tr>' +
+            '<td>' + escapeHtml(cert.common_name) + '</td>' +
+            '<td>' + escapeHtml(altNames) + '</td>' +
+            '<td>' + escapeHtml(cert.issued) + '</td>' +
+            '<td>' + escapeHtml(cert.serial_number) + '</td>' +
+            '<td>' + escapeHtml(cert.expires) + '</td>' +
+            '<td>' + escapeHtml(cert.is_certificate_authority) + '</td>' +
+            '</tr>';
+        });
+      }
+
+      if (!rows) {
+        rows = '<tr><td colspan="6">No Certificates found</td></tr>';
+      }
+
+      evt.detail.shouldSwap = false;
+      evt.target.innerHTML = rows;
+    });
+  </script>
 
 <button class="top-button">Issue New Certificate</button>

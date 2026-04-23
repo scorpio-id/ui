@@ -1,16 +1,10 @@
 package transport
 
 import (
-	"crypto/rsa"
-	"encoding/json"
-	"io"
+
 	"log"
-	"math/big"
 	"net/http"
-	"strconv"
-	"strings"
 	"text/template"
-	"time"
 
 	"github.com/scorpio-id/ui/internal/config"
 )
@@ -78,118 +72,6 @@ func (wr *WebRender) HandleLogout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-// HandleOAuth2Clients fetches OAuth2 clients metadata and returns as HTML table rows
-func (wr *WebRender) HandleOAuth2Clients(w http.ResponseWriter, r *http.Request) {
-	// Fetch clients data from external OAuth2 server
-	resp, err := http.Get("https://oauth.scorpio.ordinarycomputing.com:8082/ui/metadata")
-	if err != nil {
-		http.Error(w, "Failed to fetch clients data", http.StatusBadGateway)
-		return
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(w, "Failed to read response", http.StatusBadGateway)
-		return
-	}
-
-	// Parse the JSON response
-	var data struct {
-		Clients []struct {
-			ID                   string          `json:"id"`
-			Email                string          `json:"email"`
-			UserPrincipalName    string          `json:"user_principal_name"`
-			ServicePrincipalName string          `json:"service_principal_name"`
-			CommonName           string          `json:"common_name"`
-			SubjectAltNames      []string        `json:"subject_alternate_names"`
-			Authorizations       json.RawMessage `json:"authorizations"`
-		} `json:"clients"`
-	}
-
-	if err := json.Unmarshal(body, &data); err != nil {
-		http.Error(w, "Failed to parse clients data", http.StatusBadGateway)
-		return
-	}
-
-	// Render HTML table rows
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
-	for _, client := range data.Clients {
-		altNames := strings.Join(client.SubjectAltNames, ", ")
-		html := `<tr>
-			<td>` + client.ID + `</td>
-			<td>` + client.Email + `</td>
-			<td>` + client.UserPrincipalName + `</td>
-			<td>` + client.ServicePrincipalName + `</td>
-			<td>` + client.CommonName + `</td>
-			<td>` + altNames + `</td>
-		</tr>`
-		w.Write([]byte(html))
-	}
-
-	// If no clients, show empty state
-	if len(data.Clients) == 0 {
-		w.Write([]byte(`<tr><td colspan="6">No clients found</td></tr>`))
-	}
-}
-
-// HandleCertificates fetches certificate metadata and returns as HTML table rows
-func (wr *WebRender) HandleCertificates(w http.ResponseWriter, r *http.Request) {
-	// Fetch certificate data from external CA server
-	resp, err := http.Get("https://ca.scorpio.ordinarycomputing.com:8081/ui/metadata")
-	if err != nil {
-		http.Error(w, "Failed to fetch certificate data", http.StatusBadGateway)
-		return
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(w, "Failed to read response", http.StatusBadGateway)
-		return
-	}
-
-	// Parse the JSON response
-	var data struct {
-		Certificates []struct {
-			CommonName             string         `json:"common_name"`
-			SubjectAlternateNames  []string       `json:"subject_alternate_names"`
-			SerialNumber           *big.Int       `json:"serial_number"`
-			PublicKey              *rsa.PublicKey `json:"public_key"`
-			IssuedDate             time.Time      `json:"issued"`
-			ExpirationDate         time.Time      `json:"expires"`
-			IsCertificateAuthority bool           `json:"is_certificate_authority"`
-		} `json:"certificates"`
-	}
-
-	if err := json.Unmarshal(body, &data); err != nil {
-		http.Error(w, "Failed to parse certificate data", http.StatusBadGateway)
-		return
-	}
-
-	// Render HTML table rows
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-
-	for _, cert := range data.Certificates {
-		altNames := strings.Join(cert.SubjectAlternateNames, ", ")
-		html := `<tr>
-			<td>` + cert.CommonName + `</td>
-			<td>` + altNames + `</td>
-			<td>` + cert.SerialNumber.String() + `</td>
-			<td>` + cert.ExpirationDate.Format("2006-01-02") + `</td>
-			<td>` + strconv.FormatBool(cert.IsCertificateAuthority) + `</td>
-		</tr>`
-		w.Write([]byte(html))
-	}
-
-	// If no certificates, show empty state
-	if len(data.Certificates) == 0 {
-		w.Write([]byte(`<tr><td colspan="6">No certificates found</td></tr>`))
-	}
-}
 
 // HandleOAuth2Register handles OAuth2 client registration
 func (wr *WebRender) HandleOAuth2Register(w http.ResponseWriter, r *http.Request) {
