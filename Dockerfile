@@ -28,6 +28,7 @@ WORKDIR /
 
 # Add configuration files
 ADD /internal/config/local.yml /internal/config/local.yml
+ADD /internal/resources/ /internal/resources/
 
 COPY --from=builder /workspace/scorpio-ui .
 
