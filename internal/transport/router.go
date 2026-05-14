@@ -1,9 +1,12 @@
 package transport
 
 import (
+	"log"
+	"runtime"
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/scorpio-id/ui/internal/tls"
 	"github.com/scorpio-id/ui/internal/config"
 )
 
@@ -26,6 +29,7 @@ func NewRouter(cfg config.Config) *mux.Router {
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/dashboard", http.StatusFound)
 	}).Methods(http.MethodGet)
+
 	router.HandleFunc("/dashboard", render.DashboardPageHandler).Methods(http.MethodGet)
 
 	// Dashboard routes
@@ -46,6 +50,21 @@ func NewRouter(cfg config.Config) *mux.Router {
 	// OAuth2 metadata endpoints
 	router.HandleFunc("/ui/metadata", render.HandleOAuth2Metadata).Methods(http.MethodGet)
 	router.HandleFunc("/ui/register", render.HandleOAuth2Register).Methods(http.MethodPost)
+
+		// check if TLS is enabled, if so create cert client and serialize x509 if on linux OS
+	if runtime.GOOS == "linux" {
+		// TODO replace with granter.ObtainWebServerIdentity()
+		content, err := tls.RetrieveTLSCertificate(cfg)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// serialize PKCS12 for SSL
+		err = tls.SerializePKCS12(content, "/etc/ssl/certs")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	return router
 }

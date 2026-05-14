@@ -2,3 +2,16 @@
 server:
   host: "http://127.0.0.1"
   port: 8086
+
+# SPNEGO configurations
+spnego:
+  realm: "KRB.SCORPIO.ORDINARYCOMPUTING.COM"
+  service_principal_name: "scorpio-ui"
+  password: "move-to-kube-secrets-3333"
+
+# PKI configuration
+pki:
+  endpoint: "http://ca.scorpio.ordinarycomputing.com/spnego"
+  service_principal_name: "HTTP/ca.scorpio.ordinarycomputing.com@KRB.SCORPIO.ORDINARYCOMPUTING.COM"
+  sans:
+    - "ui.scorpio.ordinarycomputing.com"
