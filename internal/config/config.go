@@ -23,6 +23,15 @@ type Config struct {
 		ServicePrincipalName string   `yaml:"service_principal_name" json:"service_principal_name"`
 		SANs                 []string `yaml:"sans" json:"sans"`
 	} `yaml:"pki" json:"pki"`
+	Persistence struct {
+		Enabled  bool   `yaml:"enabled" json:"enabled"`
+		Port     string `yaml:"port" json:"port"`
+		Host     string `yaml:"host" json:"host"`
+		User     string `yaml:"user" json:"user"`
+		Path     string `yaml:"path" json:"path"`
+		Password string `yaml:"-" json:"-"` // DO NOT MARSHAL PASSWORD!
+		Database int    `yaml:"database" json:"database"`
+	} `yaml:"persistence" json:"persistence"`
 }
 
 // NewConfig takes a .yml filename from the same /config directory, and returns a populated configuration

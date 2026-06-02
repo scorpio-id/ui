@@ -2,17 +2,20 @@ package transport
 
 import (
 	"log"
-	"runtime"
 	"net/http"
+	"runtime"
 
 	"github.com/gorilla/mux"
-	"github.com/scorpio-id/ui/internal/tls"
 	"github.com/scorpio-id/ui/internal/config"
+	"github.com/scorpio-id/ui/internal/data"
+	"github.com/scorpio-id/ui/internal/tls"
 )
 
 func NewRouter(cfg config.Config) *mux.Router {
 	// create gorilla mux router
 	router := mux.NewRouter()
+
+	persistClient := data.NewPersistenceClient(cfg)
 
 	// create file server for css
 	fs := http.FileServer(http.Dir("internal/resources"))
@@ -54,7 +57,7 @@ func NewRouter(cfg config.Config) *mux.Router {
 		// check if TLS is enabled, if so create cert client and serialize x509 if on linux OS
 	if runtime.GOOS == "linux" {
 		// TODO replace with granter.ObtainWebServerIdentity()
-		content, err := tls.RetrieveTLSCertificate(cfg)
+		content, err := persistClient.LoadWebPKCS12()
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -15,3 +15,12 @@ pki:
   service_principal_name: "HTTP/ca.scorpio.ordinarycomputing.com@KRB.SCORPIO.ORDINARYCOMPUTING.COM"
   sans:
     - "ui.scorpio.ordinarycomputing.com"
+
+# redis configurations
+persistence:
+  enabled: true
+  host: "db-valkey-nyc1-scorpio-do-user-16782644-0.l.db.ondigitalocean.com"
+  port: 25061
+  user: "default"
+  path: "/etc/scorpio-secret/password"
+  database: 3
