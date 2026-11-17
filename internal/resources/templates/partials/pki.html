@@ -1,0 +1,106 @@
+<h1 class="page-title">X.509 Certificate Management</h1>
+<p class="page-description">View and manage X.509 certificates in the PKI system.</p>
+
+<!--
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Valid Certificates</div>
+    <div class="stat-value">892</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Expiring This Week</div>
+    <div class="stat-value">12</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Expiring This Month</div>
+    <div class="stat-value">34</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Revoked</div>
+    <div class="stat-value">42</div>
+  </div>
+</div>
+-->
+
+<div class="section-block">
+  <h3>X.509 Certificates</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Common Name</th>
+        <th>Subject Alternative Names</th>
+        <th>Issued</th>
+        <th>Serial Number</th>
+        <th>Expiration Date</th>
+        <th>Is Certificate Authority</th>
+      </tr>
+    </thead>
+      <tbody hx-get="https://ca.scorpio.ordinarycomputing.com:8081/ui/metadata" hx-trigger="load" hx-swap="innerHTML" hx-target="this" data-cert-table="true">
+        <tr>
+          <td colspan="6">Loading Certificates...</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+    <script>
+    function escapeHtml(text) {
+      return String(text || '').replace(/[&<>"']/g, function(match) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;'
+        }[match];
+      });
+    }
+
+    document.addEventListener('htmx:beforeSwap', function(evt) {
+      if (!evt.target.matches('tbody[data-cert-table]')) {
+        return;
+      }
+
+      var xhr = evt.detail.xhr;
+      if (!xhr) {
+        return;
+      }
+
+      var contentType = xhr.getResponseHeader('Content-Type') || '';
+      if (contentType.indexOf('application/json') === -1) {
+        return;
+      }
+
+      try {
+        var data = JSON.parse(xhr.responseText);
+      } catch (err) {
+        return;
+      }
+
+      var rows = '';
+      if (Array.isArray(data.certificate_data) && data.certificate_data.length > 0) {
+        data.certificate_data.forEach(function(cert) {
+          var altNames = Array.isArray(cert.subject_alternate_names)
+            ? cert.subject_alternate_names.join(', ')
+            : '';
+
+          rows += '<tr>' +
+            '<td>' + escapeHtml(cert.common_name) + '</td>' +
+            '<td>' + escapeHtml(altNames) + '</td>' +
+            '<td>' + escapeHtml(cert.issued) + '</td>' +
+            '<td>' + escapeHtml(cert.serial_number) + '</td>' +
+            '<td>' + escapeHtml(cert.expires) + '</td>' +
+            '<td>' + escapeHtml(cert.is_certificate_authority) + '</td>' +
+            '</tr>';
+        });
+      }
+
+      if (!rows) {
+        rows = '<tr><td colspan="6">No Certificates found</td></tr>';
+      }
+
+      evt.detail.shouldSwap = false;
+      evt.target.innerHTML = rows;
+    });
+  </script>
+
+<button class="top-button">Issue New Certificate</button>
