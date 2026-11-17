@@ -1,4 +1,4 @@
-FROM golang:1.19.8 AS builder
+FROM golang:1.24-alpine AS builder
 WORKDIR /workspace
 
 # Copy the Go Modules manifests
@@ -28,6 +28,8 @@ WORKDIR /
 
 # Add configuration files
 ADD /internal/config/local.yml /internal/config/local.yml
+ADD /internal/config/krb5.conf /internal/config/krb5.conf
+ADD /internal/resources/ /internal/resources/
 
 COPY --from=builder /workspace/scorpio-ui .
 
