@@ -54,9 +54,8 @@ func NewRouter(cfg config.Config) *mux.Router {
 	router.HandleFunc("/ui/metadata", render.HandleOAuth2Metadata).Methods(http.MethodGet)
 	router.HandleFunc("/ui/register", render.HandleOAuth2Register).Methods(http.MethodPost)
 
-		// check if TLS is enabled, if so create cert client and serialize x509 if on linux OS
+	// check if TLS is enabled, if so create cert client and serialize x509 if on linux OS
 	if runtime.GOOS == "linux" {
-		// TODO replace with granter.ObtainWebServerIdentity()
 		content, err := persistClient.LoadWebPKCS12()
 		if err != nil {
 			log.Fatal(err)
